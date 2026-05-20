@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>SheSure</title>
+
+<style>
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #fff0f5;
+    margin: 0;
+}
+
+header {
+    background: #ff69b4;
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
+
+p {
+    font-size: 16px;
+    line-height: 1.6;
+    text-align: justify;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+nav a {
+    text-decoration: none;
+    color: white;
+    background: #ff69b4;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: bold;
+    transition: 0.3s;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+nav a:hover {
+    background: #ff1493;
+    transform: scale(1.05);
+}
+
+
+.section {
+    display: none;
+    padding: 20px;
+    text-align: center;
+    transition: 0.4s;
+}
+
+.active {
+    display: block;
+}
+
+/* 🎨 Different Section Colors */
+#pads { background: #ffe4ec; }
+#tampons { background: #f3e8ff; }
+#cups { background: #e6f7ff; }
+#panties { background: #fff1e6; }
+
+.card {
+    background: white;
+    padding: 30px;
+    margin: 30px;
+    border-radius: 20px;
+    display: inline-block;
+    width: 320px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.big-box {
+    width: 90%;
+    max-width: 600px;
+    margin: 30px auto;
+}
+
+#cycle\&care .card {
+    width: 90%;
+}
+
+/* Colored borders */
+#pads .card { border: 2px solid #ffb6c1; }
+#tampons .card { border: 2px solid #d8b4fe; }
+#cups .card { border: 2px solid #7dd3fc; }
+#panties .card { border: 2px solid #fdba74; }
+
+#suits {
+    text-align: center;
+}
+
+#suits select {
+    display: block;
+    margin: 10px auto;
+    padding: 8px;
+    width: 200px;
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    justify-items: center;
+}
+
+#hygiene p, #hygiene li {
+    font-size: 18px;
+}
+
+#faq p {
+    font-size: 18px;
+}
+
+#hygiene,
+#faq {
+    padding: 40px 20px;
+}
+
+#hygiene .card,
+#faq .card {
+    width: 500px;
+    padding: 40px;
+    margin: 40px auto;
+}
+button {
+    background: #ff69b4;
+    color: white;
+    padding: 10px 20px;
+    margin-top: 15px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+progress {
+    width: 80%;
+    height: 20px;
+}
+
+
+button:hover {
+    background: #ff1493;
+}
+
+img {
+    width: 150px;
+}
+</style>
+
+<script>
+function show(section) {
+    window.scrollTo(0, 0);  // scroll to top
+
+    let sections = document.querySelectorAll('.section');
+    sections.forEach(s => s.classList.remove('active'));
+
+    let target = document.getElementById(section);
+    if (target) {
+        target.classList.add('active');
+    }
+}
+
+function calculateScore(formId) {
+    let form = document.getElementById(formId);
+    let inputs = form.querySelectorAll("input[type=radio]:checked");
+    
+    let score = 0;
+    inputs.forEach(i => score += parseInt(i.value));
+    
+    let total = form.querySelectorAll("input[type=radio]").length / 2;
+    let percentage = (score / total) * 100;
+
+    let resultText = percentage >= 75 ? "Safe Product ✅" : "Not Safe ❌";
+
+    document.getElementById("resultText").innerHTML =
+        "Score: " + percentage.toFixed(0) + "% <br>" + resultText;
+        
+        localStorage.setItem(formId, percentage);
+
+    show('result');
+}
+
+function loadDashboard() {
+    document.getElementById("padBar").value = localStorage.getItem("padsForm") || 0;
+    document.getElementById("tamponBar").value = localStorage.getItem("tamponsForm") || 0;
+    document.getElementById("cupsBar").value = localStorage.getItem("cupsForm") || 0;
+    document.getElementById("pantiesBar").value = localStorage.getItem("pantiesForm") || 0;
+}
+
+function getRecommendation() {
+    let flow = document.querySelectorAll("select")[0].value;
+    let skin = document.querySelectorAll("select")[1].value;
+    let comfort = document.querySelectorAll("select")[2].value;
+
+    let result = "";
+
+    if (flow === "Heavy" && comfort === "High") {
+        result = "Recommended: Menstrual Cup 🩵 (Long-lasting & leak-proof)";
+    } 
+    else if (skin === "High") {
+        result = "Recommended: Organic Cotton Pads 💗 (Skin-friendly)";
+    } 
+    else if (flow === "Light") {
+        result = "Recommended: Period Panties 🧡 (Comfortable & reusable)";
+    } 
+    else {
+        result = "Recommended: Tampons 💜 (Active lifestyle)";
+    }
+
+    document.getElementById("recommendResult").innerHTML = result;
+}
+</script>
+
+</head>
+
+<body>
+
+<header>
+<h1>SheSure 💗</h1>
+<p>Know What You Wear</p>
+
+<nav>
+<a onclick="show('home')">Home</a>
+<a onclick="show('cycle&care')">Cycle&Care</a>
+<a onclick="show('products')">Products</a>
+<a onclick="show('suits')">What Suits You</a>
+<a onclick="show('hygiene')">Hygiene</a>
+<a onclick="show('faq')">FAQ</a>
+<a onclick="show('about')">About</a>
+<a onclick="show('contact')">Contact</a>
+
+</nav>
+</header>
+
+<!-- HOME -->
+<div id="home" class="section active">
+<h2>Welcome to SheSure</h2>
+<p>SheSure is a menstrual product safety awareness platform designed to help users understand the materials used in sanitary products like pads, tampons, menstrual cups, and period panties. Many people are unaware of the ingredients that come in direct contact with their skin.
+
+This website provides simple information about different menstrual products and helps you make safe and informed choices. It promotes hygiene, awareness, and better health without supporting any specific brand.
+</p>
+<p>
+This website provides simple information about different menstrual products and helps
+you make safe and informed choices. It promotes hygiene, awareness, and better health
+without supporting any specific brand.
+</p>
+
+<h3>Types of Products</h3>
+<p>
+<b>Pads:</b> Commonly used, easy to handle, available in different sizes.<br>
+<b>Tampons:</b> Inserted inside the body, provide freedom of movement.<br>
+<b>Menstrual Cups:</b> Reusable, eco-friendly, and long-lasting option.<br>
+<b>Period Panties:</b> Comfortable, reusable, and absorbent innerwear.
+</p>
+
+
+</div>
+
+<!-- BASIC INFO -->
+<div id="cycle&care" class="section">
+<h2>Basic Information About Periods 💗</h2>
+
+<div class="card big-box" style="text-align:left;">
+
+<p>
+    Menstruation is controlled by hormones from the brain and ovaries. In a typical monthly cycle of about 28 days (though it can vary), the process starts with the period (around day 1–5), when the old uterine lining is shed. After that, a hormone called FSH helps an egg develop in the ovary, and estrogen makes the uterus lining thick again (day 6–13). In the middle of the cycle (around day 14), another hormone, LH, causes the ovary to release the egg—this is called ovulation. After ovulation (day 15–28), progesterone prepares the uterus for possible pregnancy. If pregnancy does 
+    not happen, estrogen and progesterone levels drop, causing the lining to break down and come out as the next period, and the cycle repeats. Cramps occur because the uterus muscles contract to push out the lining, and mood changes or tiredness happen due to hormone changes. From a male point of view, understanding this shows that periods are not just simple bleeding but a full monthly biological cycle, and the pain and emotional changes are real, so it is important to be respectful, supportive, and not make fun of it.
+</p>
+</div>
+
+<br><br>
+<button onclick="show('takecare')">How to Support 💙</button>
+
+</div>
+
+<div id="takecare" class="section">
+<h2>How to Take Care of Your Partner 💙</h2>
+
+<div class="card" style="text-align:left;">
+
+<p>If a male is viewing this page, here’s how you can support your partner during periods:</p>
+
+<ul>
+<li>Be understanding and patient</li>
+<li>Respect mood changes (they are natural)</li>
+<li>Offer help (food, water, or comfort)</li>
+<li>Encourage rest and relaxation</li>
+<li>Do not make jokes or shame about periods</li>
+<li>Learn basic hygiene awareness</li>
+<li>Be emotionally supportive</li>
+</ul>
+
+<p><b>Remember:</b> Small care and respect make a big difference.</p>
+
+</div>
+
+<br>
+<button onclick="show('products')">Go to Products 🛍️</button>
+</br>
+
+</div>
+<!-- PRODUCTS -->
+<div id="products" class="section">
+
+<div class="products-grid">
+
+<div class="card">
+<h3>Pads</h3>
+<img src="Pads.jpeg" alt="Pads">
+<br><br>
+<button onclick="show('pads')">Check</button>
+</div>
+
+<div class="card">
+<h3>Tampons</h3>
+<img src="tampons.jpeg" alt="tampons">
+<br><br>
+<button onclick="show('tampons')">Check</button>
+</div>
+
+<div class="card">
+<h3>Menstrual Cup</h3>
+<img src="cups.jpeg" alt="cups">
+<br><br>
+<button onclick="show('cups')">Check</button>
+</div>
+
+<div class="card">
+<h3>Period Panty</h3>
+<img src="panties.jpeg" alt="panties">
+<br><br>
+<button onclick="show('panties')">Check</button>
+</div>
+
+</div>
+
+</div>
+
+
+<!-- PADS -->
+<div id="pads" class="section">
+<h2>Sanitary Pads Safety 💗</h2>
+
+<div class="card">
+<h3>What You Should Check Before Choosing a Pad</h3>
+
+<p><b>1. Cotton & Breathable Material:</b> 
+Choose pads that have a soft cotton top layer and allow air flow. This helps in preventing sweating and keeps your skin comfortable.</p>
+
+<p><b>2. Fragrance-Free:</b> 
+Avoid pads with artificial fragrance, as they may cause irritation or allergic reactions.</p>
+
+<p><b>3. Chlorine-Free Processing:</b> 
+Pads processed without chlorine are safer and reduce exposure to harmful chemicals.</p>
+
+<p><b>4. Skin-Friendly Core:</b> 
+The inner material should be gentle and non-irritating, especially for sensitive skin.</p>
+
+<p><b>5. Good Absorption & Leak Protection:</b> 
+Pads should absorb quickly and have side barriers to prevent leakage during heavy flow.</p>
+
+<br><br>
+<button onclick="show('padsQuiz')">Take Safety Quiz</button>
+</div>
+</div>
+
+<div id="padsQuiz" class="section">
+
+<h2>Pads Safety Quiz 💗</h2>
+
+<form id="padsForm" class="card">
+
+<p>1. Does your sanitary pad have a soft cotton top layer?</p>
+<input type="radio" name="q1" value="1"> Yes
+<input type="radio" name="q1" value="0"> No
+
+<p>2. Is your pad fragrance-free?</p>
+<input type="radio" name="q2" value="1"> Yes
+<input type="radio" name="q2" value="0"> No
+
+<p>3. Is it chlorine-free?</p>
+<input type="radio" name="q3" value="1"> Yes
+<input type="radio" name="q3" value="0"> No
+
+<p>4. Is it breathable?</p>
+<input type="radio" name="q4" value="1"> Yes
+<input type="radio" name="q4" value="0"> No
+
+<p>5. Good absorption?</p>
+<input type="radio" name="q5" value="1"> Yes
+<input type="radio" name="q5" value="0"> No
+
+<br><br>
+<button type="button" onclick="calculateScore('padsForm')">Submit</button>
+
+</form>
+</div>
+
+<!-- TAMPONS -->
+<div id="tampons" class="section">
+<h2>Tampons Safety 💗</h2>
+
+<div class="card">
+<h3>What You Should Check Before Choosing a Tampon</h3>
+
+<p><b>1. 100% Cotton Material:</b> 
+Choose tampons made of pure cotton to reduce irritation and chemical exposure.</p>
+
+<p><b>2. Fragrance-Free:</b> 
+Avoid scented tampons as they may cause infections or irritation.</p>
+
+<p><b>3. Proper Absorbency Level:</b> 
+Select light, regular, or super absorbency based on your flow.</p>
+
+<p><b>4. Smooth Applicator:</b> 
+A smooth applicator makes insertion easier and more comfortable.</p>
+
+<p><b>5. Safe Usage Time:</b> 
+Tampons should be changed every 4–8 hours to avoid health risks.</p>
+<br>
+<button onclick="show('tamponsQuiz')">Take Safety Quiz</button>
+
+</div>
+</div>
+
+<div id="tamponsQuiz" class="section">
+
+<h2>Tampons Safety Quiz 💜</h2>
+
+<form id="tamponsForm" class="card">
+
+<p>1. Is your tampon made of 100% cotton?</p>
+<input type="radio" name="q1" value="1"> Yes
+<input type="radio" name="q1" value="0"> No
+
+<p>2. Is it fragrance-free?</p>
+<input type="radio" name="q2" value="1"> Yes
+<input type="radio" name="q2" value="0"> No
+
+<p>3. Are you using correct absorbency?</p>
+<input type="radio" name="q3" value="1"> Yes
+<input type="radio" name="q3" value="0"> No
+
+<p>4. Smooth applicator?</p>
+<input type="radio" name="q4" value="1"> Yes
+<input type="radio" name="q4" value="0"> No
+
+<p>5. Change within 4–8 hours?</p>
+<input type="radio" name="q5" value="1"> Yes
+<input type="radio" name="q5" value="0"> No
+
+<br><br>
+<button type="button" onclick="calculateScore('tamponsForm')">Submit</button>
+
+</form>
+</div>
+
+<!-- MENSTRUAL CUP -->
+<div id="cups" class="section ">
+<h2>Menstrual Cup Safety 💗</h2>
+
+<div class="card">
+<h3>What You Should Check Before Choosing a Menstrual Cup</h3>
+
+<p><b>1. Medical-Grade Silicone:</b> 
+Choose cups made from safe, medical-grade silicone.</p>
+
+<p><b>2. Correct Size:</b> 
+Select size based on age, flow, and comfort.</p>
+
+<p><b>3. Flexible & Comfortable:</b> 
+Cup should be soft enough to insert easily.</p>
+
+<p><b>4. Easy to Clean:</b> 
+It should be easy to wash and sterilize.</p>
+
+<p><b>5. Long Wear Time:</b> 
+Cups can be worn for up to 8–12 hours safely.</p>
+
+</div>
+<br><br>
+<button onclick="show('cupsQuiz')">Take Safety Quiz</button>
+</div>
+</div>
+
+<div id="cupsQuiz" class="section">
+
+<h2>Menstrual Cup Safety Quiz 🩵</h2>
+
+<form id="cupsForm" class="card">
+
+<p>1. Is your cup medical-grade silicone?</p>
+<input type="radio" name="q1" value="1"> Yes
+<input type="radio" name="q1" value="0"> No
+
+<p>2. Correct size?</p>
+<input type="radio" name="q2" value="1"> Yes
+<input type="radio" name="q2" value="0"> No
+
+<p>3. Comfortable and flexible?</p>
+<input type="radio" name="q3" value="1"> Yes
+<input type="radio" name="q3" value="0"> No
+
+<p>4. Clean properly?</p>
+<input type="radio" name="q4" value="1"> Yes
+<input type="radio" name="q4" value="0"> No
+
+<p>5. Empty within 8–12 hours?</p>
+<input type="radio" name="q5" value="1"> Yes
+<input type="radio" name="q5" value="0"> No
+
+<br><br>
+<button type="button" onclick="calculateScore('cupsForm')">Submit</button>
+
+</form>
+</div>
+
+<!-- PERIOD PANTY -->
+<div id="panties" class="section">
+<h2>Period Panty Safety 💗</h2>
+
+<div class="card">
+<h3>What You Should Check Before Choosing Period Panties</h3>
+
+<p><b>1. Absorbent Layers:</b> 
+Panties should have multiple layers to absorb flow properly.</p>
+
+<p><b>2. Breathable Fabric:</b> 
+Choose materials that allow airflow and prevent sweating.</p>
+
+<p><b>3. Leak-Proof Design:</b> 
+Good quality panties prevent leaks during movement.</p>
+
+<p><b>4. Washable & Reusable:</b> 
+They should be easy to wash and durable.</p>
+
+<p><b>5. Comfortable Fit:</b> 
+Proper fit ensures comfort and prevents leakage.</p>
+<br><br>
+<button onclick="show('pantiesQuiz')">Take Safety Quiz</button>
+</div>
+</div>
+
+<div id="pantiesQuiz" class="section">
+
+<h2>Period Panty Safety Quiz 🧡</h2>
+
+<form id="pantiesForm" class="card">
+
+<p>1. Good absorbent layers?</p>
+<input type="radio" name="q1" value="1"> Yes
+<input type="radio" name="q1" value="0"> No
+
+<p>2. Breathable fabric?</p>
+<input type="radio" name="q2" value="1"> Yes
+<input type="radio" name="q2" value="0"> No
+
+<p>3. Leak-proof?</p>
+<input type="radio" name="q3" value="1"> Yes
+<input type="radio" name="q3" value="0"> No
+
+<p>4. Washable?</p>
+<input type="radio" name="q4" value="1"> Yes
+<input type="radio" name="q4" value="0"> No
+
+<p>5. Comfortable fit?</p>
+<input type="radio" name="q5" value="1"> Yes
+<input type="radio" name="q5" value="0"> No
+
+<br><br>
+<button type="button" onclick="calculateScore('pantiesForm')">Submit</button>
+
+</form>
+</div>
+
+
+
+<!-- RESULT -->
+<div id="result" class="section">
+<h2>Your Result</h2>
+<p id="resultText"></p>
+<button onclick="show('products')">Go TO PRODUCTS</button>
+</div>
+
+<!-- Whats suits you-->
+<div id="suits" class="section">
+<h2>Find What Suits You</h2>
+
+<h3>Flow Level:</h3>
+<select>
+<option>Light</option>
+<option>Medium</option>
+<option>Heavy</option>
+</select>
+
+<h4>Skin Sensitivity:</h4>
+<select>
+<option>Low</option>
+<option>High</option>
+</select>
+
+<h5>Comfort Preference:</h5>
+<select>
+<option>Low</option>
+<option>Medium</option>
+<option>High</option>
+</select>
+
+<br><br>
+
+<button onclick="getRecommendation()">Get Recommendation</button>
+
+<p id="recommendResult" style="font-weight:bold; margin-top:15px;"></p>
+
+</div>
+
+<!-- HYGIENE -->
+<div id="hygiene" class="section">
+<h2>Hygiene Tips 💗</h2>
+
+<div class="card">
+<ul style="text-align:left;">
+
+<li>Change pads every 4–6 hours and tampons every 4–8 hours</li>
+
+<li>Wash hands before and after changing products</li>
+
+<li>Keep intimate area clean using water (avoid harsh soap)</li>
+
+<li>Use clean, good-quality sanitary products</li>
+
+<li>Dispose used products properly in a dustbin</li>
+
+<li>Wear comfortable cotton underwear</li>
+
+<li>Store products in a clean, dry place</li>
+
+<li>Clean reusable items like cups properly</li>
+
+</ul>
+</div>
+</div>
+<!-- FAQ -->
+<div id="faq" class="section">
+<h2>FAQ ❓</h2>
+
+<div class="card" style="text-align:left;">
+
+<p><b>1. How often should I change a pad?</b><br>
+Every 4–6 hours to maintain hygiene and avoid infections.</p>
+
+<p><b>2. Can I sleep with a tampon?</b><br>
+Avoid using it for long hours. Use a pad at night for safety.</p>
+
+<p><b>3. Are scented products safe?</b><br>
+It is better to avoid them as they may cause irritation.</p>
+
+<p><b>4. Can I use a menstrual cup for long hours?</b><br>
+Yes, but empty it within 8–12 hours.</p>
+
+<p><b>5. Are menstrual cups safe?</b><br>
+Yes, if cleaned and used properly.</p>
+
+<p><b>6. Can I reuse period panties?</b><br>
+Yes, wash them properly after each use.</p>
+
+<p><b>7. What is the best product for beginners?</b><br>
+Pads are usually easiest for beginners.</p>
+
+<p><b>8. Is it normal to have cramps during periods?</b><br>
+Yes, mild cramps are normal.</p>
+
+<p><b>9. Can I exercise during periods?</b><br>
+Yes, light exercise is safe and can reduce discomfort.</p>
+
+<p><b>10. How do I dispose of pads or tampons?</b><br>
+Wrap them in paper and throw in a dustbin. Do not flush.</p>
+
+<p><b>11. Can I bathe during periods?</b><br>
+Yes, daily bathing helps maintain hygiene.</p>
+
+<p><b>12. What if I have very heavy flow?</b><br>
+Use high-absorbency products or a menstrual cup.</p>
+
+</div>
+</div>
+
+<!-- ABOUT -->
+<div id="about" class="section">
+<h2>About 💗</h2>
+
+<div class="card">
+<p>SheSure is a platform that helps users understand menstrual products and make safe choices. It provides simple information, safety checks, and hygiene tips to promote awareness and better health.</p>
+</div>
+
+</div>
+
+<!-- CONTACT -->
+<div id="contact" class="section">
+<h2>Feedback 💬</h2>
+
+<div class="card">
+
+<input placeholder="Your Name"><br><br>
+
+<input type="email" placeholder="Your Email"><br><br>
+
+<textarea placeholder="Write your feedback here..." rows="5"></textarea><br><br>
+
+<button onclick="alert('Thank you for your feedback! 💗')">Submit</button>
+
+</div>
+</div>
+
+</body>
+</html>
